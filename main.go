@@ -14,7 +14,7 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
 
 	// THE DOMAIN HAS TO BE BITBUCKET
-	url := ""
+	url := "test"
 	if parts[2] == "bitbucket.org" {
 
 		// MAKE API URL TO GET JSON FROM THE REPO
