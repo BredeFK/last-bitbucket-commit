@@ -24,7 +24,7 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// PRINT API URL TO USER
-	fmt.Fprintln(w, url)
+	fmt.Fprint(w, url)
 }
 
 func main(){
