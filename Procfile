@@ -1,1 +1,1 @@
-web: Bitbucket-commit
+web: Bitbucket_Heroku
