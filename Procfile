@@ -1,1 +1,1 @@
-web: Bitbucket_commit
+web: Bitbucket-commit
