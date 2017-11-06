@@ -4,11 +4,49 @@ import (
 	"net/http"
 	"strings"
 	"fmt"
+	"time"
+	"log"
+	"io/ioutil"
+	"encoding/json"
 	"os"
 )
 
-func getInfo(URL string){
-	/*
+// STRUCT FOR GETTING THE JSON FILE FROM THE API URL
+type Bitbucket struct {
+	Pagelen int `json:"pagelen"`
+	Commit map[int]Commit
+}
+
+type Commit struct{
+	Hash 	string `json:"hash"`
+	Repository Repository
+	Author Author
+	Date 	string `json:"date"`
+	Message string `json:"message"`
+	Type 	string `json:"type"`
+}
+
+type Repository struct{
+	Type		string `json:"type"`
+	Name		string `json:"name"`
+	FullName	string `json:"full_name"`
+}
+
+type Author struct{
+	Raw 	string `json:"raw"`
+	User User
+}
+
+type User struct{
+	UserName 	string `json:"username"`
+	DisplayName	string `json:"display_name"`
+	Type 		string `json:"type"`
+}
+
+
+// FUNCTION FOR GETTING THE JSON INFORMATION FROM THE API URL
+func getInfo(URL string) Bitbucket{
+
 	client := http.Client{
 		Timeout: time.Second * 2,
 	}
@@ -30,16 +68,15 @@ func getInfo(URL string){
 		log.Fatal(readErr)
 	}
 
-	json := Json{}
-	jsonErr := json.Unmarshal(body, &json)
+	bitbucket := Bitbucket{}
+	jsonErr := json.Unmarshal(body, &bitbucket)
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
 	}
 
-	return json
-	*/
 
 
+	return bitbucket
 }
 
 func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +95,8 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 		// PRINT API URL TO USER
 
 		// GET INFO FROM API SITE
-		// info := getInfo(url)
+		info := getInfo(url)
+		json.NewEncoder(w).Encode(info.Pagelen)
 
 		fmt.Fprint(w, url)
 	}else{
