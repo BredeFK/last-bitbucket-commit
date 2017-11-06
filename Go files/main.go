@@ -8,7 +8,6 @@ import (
 	"log"
 	"io/ioutil"
 	"encoding/json"
-	"os"
 )
 
 // STRUCT FOR GETTING THE JSON FILE FROM THE API URL
@@ -45,7 +44,7 @@ type User struct{
 
 
 // FUNCTION FOR GETTING THE JSON INFORMATION FROM THE API URL
-func getInfo(URL string) Bitbucket{
+func getCommit(URL string) Commit{
 
 	client := http.Client{
 		Timeout: time.Second * 2,
@@ -68,15 +67,13 @@ func getInfo(URL string) Bitbucket{
 		log.Fatal(readErr)
 	}
 
-	bitbucket := Bitbucket{}
-	jsonErr := json.Unmarshal(body, &bitbucket)
+	payload := Commit{}
+	jsonErr := json.Unmarshal(body, &payload)
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
 	}
 
-
-
-	return bitbucket
+	return payload
 }
 
 func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
@@ -86,30 +83,77 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 	// SPLIT URL FOR EACH "/"
 	parts := strings.Split(r.URL.Path, "/")
 
+	// GET LENGTH OF ARRAY
+	length := len(parts) - 1
+
 	// THE DOMAIN HAS TO BE BITBUCKET
-	url := ""
+	if length == 4 && parts[4] != ""{
+		if parts[2] == "bitbucket.org" {
+
+			// MAKE API URL TO GET JSON FROM THE REPO
+			url := "https://api.bitbucket.org/2.0/repositories/" + parts[3] + "/" + parts[4] + "/commits"
+
+			// GET INFO FROM API SITE
+			//	info := getInfo(url)
+			//	json.NewEncoder(w).Encode(info)
+
+			fmt.Fprint(w, url)
+		} else {
+			// ERROR IF THE DOMAIN INS'T BITBUCKET
+			http.Error(w, "Domain can not be '"+parts[2]+"', it has to be 'bitbucket.org'", http.StatusMethodNotAllowed)
+		}
+	}else{
+		// ERROR IF THE USER HASN'T WRITTEN AN URL
+		http.Error(w, "Wrong url! Format : <root>/bitbucket.org/<owner>/<repository>", http.StatusMethodNotAllowed)
+		fmt.Fprintln(w, length)
+	}
+}
+
+func HandleID(w http.ResponseWriter, r *http.Request) {
+	// DECLARE IT'S A JSON FILE
+	http.Header.Add(w.Header(), "Content-type", "application/json")
+
+	// SPLIT URL FOR EACH "/"
+	parts := strings.Split(r.URL.Path, "/")
+
+	// GET LENGTH OF ARRAY
+	length := len(parts) - 1
+
+	// THE DOMAIN HAS TO BE BITBUCKET
 	if parts[2] == "bitbucket.org" {
 
-		// MAKE API URL TO GET JSON FROM THE REPO
-		url = "https://api.bitbucket.org/2.0/repositories/" + parts[3] + "/" + parts[4] + "/commits"
-		// PRINT API URL TO USER
+		// THE URL HAS TO HAVE AN ID
+		if length == 5{
 
-		// GET INFO FROM API SITE
-		info := getInfo(url)
-		json.NewEncoder(w).Encode(info.Pagelen)
+			// THE ID HAS TO BE SOMETHING
+			if parts[5] != "" {
 
-		fmt.Fprint(w, url)
+				// MAKE API URL TO GET JSON FROM THE REPO
+				url := "https://api.bitbucket.org/2.0/repositories/" + parts[3] + "/" + parts[4] + "/commit/" + parts[5]
+
+					// GET INFO FROM API SITE
+					info := getCommit(url)
+
+					// PRINT JSON FILE TO USER
+					json.NewEncoder(w).Encode(info)
+			}else{
+				// ERROR IF THERE ISN'T AN VALID ID AT THE END OF THE URL
+				http.Error(w, "You must enter an valid ID!", http.StatusMethodNotAllowed)
+			}
+		}else{
+			// ERROR IF THERE ISN'T AN ID AT THE END OF THE URL
+			http.Error(w, "You must enter an ID!", http.StatusMethodNotAllowed)
+		}
 	}else{
 		// ERROR IF THE DOMAIN INS'T BITBUCKET
 		http.Error(w,"Domain can not be '" + parts[2] + "', it has to be 'bitbucket.org'",http.StatusMethodNotAllowed)
 	}
-
-
 }
 
 func main(){
-	port := os.Getenv("PORT")
+//	port := os.Getenv("PORT")
 	http.HandleFunc("/url_is/", HandleBitbucket)
-	http.ListenAndServe(":"+port, nil)
-//	http.ListenAndServe("localhost:8080", nil)
+	http.HandleFunc("/url_id/", HandleID)
+//	http.ListenAndServe(":"+port, nil)
+	http.ListenAndServe("localhost:8080", nil)
 }
