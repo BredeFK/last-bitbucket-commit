@@ -10,7 +10,7 @@ in the said repository.
 ### Why?
 I couldn't find an easy way to do this so i decided to make my own solution.
 
-Also, I had an similar assignment for a cloud course I had, and want to learn
+Also, I had an similar assignment for a cloud course, and want to learn
 
 more with my own project.
 
