@@ -8,6 +8,7 @@ import (
 	"log"
 	"io/ioutil"
 	"encoding/json"
+	"os"
 )
 
 // STRUCT FOR GETTING THE JSON FILE FROM THE API URL
@@ -151,9 +152,9 @@ func HandleID(w http.ResponseWriter, r *http.Request) {
 }
 
 func main(){
-//	port := os.Getenv("PORT")
+	port := os.Getenv("PORT")
 	http.HandleFunc("/url_is/", HandleBitbucket)
 	http.HandleFunc("/url_id/", HandleID)
-//	http.ListenAndServe(":"+port, nil)
-	http.ListenAndServe("localhost:8080", nil)
+	http.ListenAndServe(":"+port, nil)
+//	http.ListenAndServe("localhost:8080", nil)
 }

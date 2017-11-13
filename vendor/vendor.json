@@ -1,6 +1,12 @@
 {
 	"comment": "",
+	"heroku": {
+		"goVersion": "go1.9",
+		"install": [
+			"bitbucket-webhook"
+		]
+	},
 	"ignore": "test",
 	"package": [],
-	"rootPath": "Bitbucket_Heroku"
+	"rootPath": "bitbucket.org/Brede_F_Klausen/bitbucket-webhook"
 }

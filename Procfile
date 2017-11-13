@@ -1,1 +1,1 @@
-web: Bitbucket_Heroku
+web: bitbucket-webhook
