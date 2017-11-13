@@ -14,39 +14,62 @@ import (
 
 // HandleBitbucket handles bitbucket url and returns an api url
 func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
-	// DECLARE IT'S A JSON FILE
+
+	// Declare it's a json file
 	http.Header.Add(w.Header(), "Content-type", "application/json")
 
-	// SPLIT URL FOR EACH "/"
+	// Split url for each "/"
 	parts := strings.Split(r.URL.Path, "/")
 
-	// GET LENGTH OF ARRAY
+	// Get length of array
 	length := len(parts) - 1
 
-	// THE DOMAIN HAS TO BE BITBUCKET
+	// If the url is the right length and the last part is not blank
 	if length == 4 && parts[4] != "" {
-		if parts[2] == "bitbucket.org" {
 
-			// MAKE API URL TO GET JSON FROM THE REPO
+		// Checks the domain name
+		switch parts[2] {
+
+		// Acceptable if the domain is bitbucket.org
+		case "bitbucket.org":
+
+			// Make api url to get json from the repository
 			url := "https://api.bitbucket.org/2.0/repositories/" + parts[3] + "/" + parts[4] + "/commits"
 
-			// GET INFO FROM API SITE
+			// Get info from api site
 			info := GetValues(url)
+
+			// Convert to json
 			json.NewEncoder(w).Encode(info.Values[0]) // Print latest
 
-		} else {
-			// ERROR IF THE DOMAIN INS'T BITBUCKET
-			http.Error(w, "Domain can not be '"+parts[2]+"', it has to be 'bitbucket.org'", http.StatusBadRequest)
+		// Also acceptable if the domain is github.com, bur it's not implemented yet
+		// TODO : Implement for github later
+		case "github.com":
+
+			// Error because it hasn't been implemented yet
+			http.Error(w, "Not implemented yet", http.StatusNotImplemented)
+			return
+
+		// If the domain is neither, give error
+		default:
+
+			// Error if the domain isn't bitbucket.org
+			http.Error(w, "Domain can not be '"+parts[2]+"', it has to be 'bitbucket.org' or 'github.com'", http.StatusBadRequest)
+			return
 		}
+
+		// If the url is not right length and the last part is blank
 	} else {
-		// ERROR IF THE USER HASN'T WRITTEN AN URL
+
+		// Give error
 		http.Error(w, "Wrong url! Format : <root>/bitbucket.org/<owner>/<repository>", http.StatusBadRequest)
-		fmt.Fprintln(w, length)
 	}
 }
 
 // HandleHTML handles welcome page
 func HandleHTML(w http.ResponseWriter, r *http.Request) {
+
+	// Print message to user about how to use the site
 	fmt.Fprintln(w, "Hello! Welcome to my project!\n\nTo get the latest commit in json format, you have to write like this:")
 	fmt.Fprintln(w, "https://bitbucket-commit.herokuapp.com/url_is/bitbucket.org/<owner>/<repository>\n\nStatus code:", http.StatusOK)
 }

@@ -5,6 +5,8 @@
 
 package main
 
+import "time"
+
 // Bitbucket struct
 type Bitbucket struct {
 	Pagelen int      `json:"pagelen"`
@@ -18,7 +20,7 @@ type Values struct {
 	Links      Links      `json:"links"`
 	Author     Author     `json:"author"`
 	Parents    []Parents  `json:"parents"`
-	Date       string     `json:"date"` // TODO : change to time later
+	Date       time.Time  `json:"date"`
 	Message    string     `json:"message"`
 	Type       string     `json:"type"`
 }
