@@ -24,8 +24,8 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 	// Get length of array
 	length := len(parts) - 1
 
-	// If the url is the right length and the last part is not blank
-	if length == 4 && parts[4] != "" {
+	// (If the url is the right length or the length is 5 but parts[5] is blank) and parts[4] is not blank
+	if (length == 4 || length == 5 && parts[5] == "") && parts[4] != "" {
 
 		// Checks the domain name
 		switch parts[2] {
@@ -58,7 +58,7 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// If the url is not right length and the last part is blank
+		// if the url is wrong
 	} else {
 
 		// Give error
@@ -71,5 +71,6 @@ func HandleHTML(w http.ResponseWriter, r *http.Request) {
 
 	// Print message to user about how to use the site
 	fmt.Fprintln(w, "Hello! Welcome to my project!\n\nTo get the latest commit in json format, you have to write like this:")
-	fmt.Fprintln(w, "https://bitbucket-commit.herokuapp.com/url_is/bitbucket.org/<owner>/<repository>\n\nStatus code:", http.StatusOK)
+	fmt.Fprintln(w, "https://bitbucket-commit.herokuapp.com/url_is/bitbucket.org/<owner>/<repository>\n\nExample:")
+	fmt.Fprintln(w, "https://bitbucket-commit.herokuapp.com/url_is/bitbucket.org/Brede_F_Klausen/bitbucket-webhook\n\nStatusCode:", http.StatusOK)
 }
