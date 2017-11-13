@@ -6,25 +6,22 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
+	"os"
 )
 
 // Bitbucket struct
 type Bitbucket struct {
 	Pagelen int            `json:"pagelen"`
-	Commit  map[int]Commit `json:"values"`
-}
-
-// Commit struct
-type Commit struct {
-	Hash       string     `json:"hash"`
-	Repository Repository `json:"repository"`
-	Author     Author     `json:"author"`
-	Date       string     `json:"date"`
-	Message    string     `json:"message"`
-	Type       string     `json:"type"`
+	Values []struct {
+		Hash       string     `json:"hash"`
+		Repository Repository `json:"repository"`
+		Author     Author     `json:"author"`
+		Date       string     `json:"date"`
+		Message    string     `json:"message"`
+		Type       string     `json:"type"`
+	} `json:"values"`
 }
 
 // Repository struct
@@ -50,10 +47,10 @@ type User struct {
 // FUNCTION FOR GETTING THE JSON INFORMATION FROM THE API URL
 
 // GetCommit function for getting a commit
-func GetCommit(URL string) Commit {
+func GetCommit(URL string) Bitbucket {
 
 	client := http.Client{
-		Timeout: time.Second * 2,
+		Timeout: time.Second * 10,
 	}
 
 	req, err := http.NewRequest(http.MethodGet, URL, nil)
@@ -73,7 +70,7 @@ func GetCommit(URL string) Commit {
 		log.Fatal(readErr)
 	}
 
-	payload := Commit{}
+	payload := Bitbucket{}
 	jsonErr := json.Unmarshal(body, &payload)
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
@@ -101,17 +98,16 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 			url := "https://api.bitbucket.org/2.0/repositories/" + parts[3] + "/" + parts[4] + "/commits"
 
 			// GET INFO FROM API SITE
-			//	info := getInfo(url)
-			//	json.NewEncoder(w).Encode(info)
+				info := GetCommit(url)
+				json.NewEncoder(w).Encode(info.Values[0]) // Print latest
 
-			fmt.Fprint(w, url)
 		} else {
 			// ERROR IF THE DOMAIN INS'T BITBUCKET
-			http.Error(w, "Domain can not be '"+parts[2]+"', it has to be 'bitbucket.org'", http.StatusMethodNotAllowed)
+			http.Error(w, "Domain can not be '"+parts[2]+"', it has to be 'bitbucket.org'", http.StatusBadRequest)
 		}
 	} else {
 		// ERROR IF THE USER HASN'T WRITTEN AN URL
-		http.Error(w, "Wrong url! Format : <root>/bitbucket.org/<owner>/<repository>", http.StatusMethodNotAllowed)
+		http.Error(w, "Wrong url! Format : <root>/bitbucket.org/<owner>/<repository>", http.StatusBadRequest)
 		fmt.Fprintln(w, length)
 	}
 }
@@ -137,31 +133,42 @@ func HandleID(w http.ResponseWriter, r *http.Request) {
 			if parts[5] != "" {
 
 				// MAKE API URL TO GET JSON FROM THE REPO
-				url := "https://api.bitbucket.org/2.0/repositories/" + parts[3] + "/" + parts[4] + "/commit/" + parts[5]
+			//	url := "https://api.bitbucket.org/2.0/repositories/" + parts[3] + "/" + parts[4] + "/commit/" + parts[5]
 
 				// GET INFO FROM API SITE
-				info := GetCommit(url)
+			//	info := GetCommit(url)
 
 				// PRINT JSON FILE TO USER
-				json.NewEncoder(w).Encode(info)
+			//	json.NewEncoder(w).Encode(info)
+
 			} else {
 				// ERROR IF THERE ISN'T AN VALID ID AT THE END OF THE URL
-				http.Error(w, "You must enter an valid ID!", http.StatusMethodNotAllowed)
+				http.Error(w, "You must enter an valid ID!", http.StatusBadRequest)
 			}
 		} else {
 			// ERROR IF THERE ISN'T AN ID AT THE END OF THE URL
-			http.Error(w, "You must enter an ID!", http.StatusMethodNotAllowed)
+			http.Error(w, "You must enter an ID!", http.StatusBadRequest)
 		}
 	} else {
 		// ERROR IF THE DOMAIN INS'T BITBUCKET
-		http.Error(w, "Domain can not be '"+parts[2]+"', it has to be 'bitbucket.org'", http.StatusMethodNotAllowed)
+		http.Error(w, "Domain can not be '"+parts[2]+"', it has to be 'bitbucket.org'", http.StatusBadRequest)
 	}
+}
+
+// HandleHTML handles welcome page
+func HandleHTML(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Hello! Welcome to my project!\n\nTo get the api url for your bitbucket repository, you have to write like this:")
+	fmt.Fprintln(w, "https://bitbucket-commit.herokuapp.com/url_is/bitbucket.org/<owner>/<repository>")
+	fmt.Fprintln(w, "\nTo get api url for a specific url, you have to write like this:")
+	fmt.Fprintln(w, "https://bitbucket-commit.herokuapp.com/url_id/bitbucket.org/<owner>/<repository>/<hashID>\n\nStatus code:", http.StatusOK)
+//	w.WriteHeader(http.StatusOK)
 }
 
 func main() {
 	port := os.Getenv("PORT")
+	http.HandleFunc("/", HandleHTML)
 	http.HandleFunc("/url_is/", HandleBitbucket)
 	http.HandleFunc("/url_id/", HandleID)
 	http.ListenAndServe(":"+port, nil)
-	//	http.ListenAndServe("localhost:8080", nil)
+//	http.ListenAndServe("localhost:8080", nil)
 }
