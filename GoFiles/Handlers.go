@@ -1,6 +1,6 @@
 //====================================================//
-// 		   AUTHOR: 	Brede Fritjof Klausen             //
-// 	   UNIVERSITY: 	NTNU in Gj�vik                    //
+//             AUTHOR: 	Brede Fritjof Klausen         //
+//         UNIVERSITY: 	NTNU in Gjøvik                //
 //====================================================//
 
 package main
@@ -79,6 +79,6 @@ func HandleHTML(w http.ResponseWriter, r *http.Request) {
 
 	// Print message to user about how to use the site
 	fmt.Fprintln(w, "Hello! Welcome to my project!\n\nTo get the latest commit in json format, you have to write like this:")
-	fmt.Fprintln(w, "https://www.fritjof.no/url_is/bitbucket.org/<owner>/<repository>\n\nExample:")
-	fmt.Fprintln(w, "https://www.fritjof.no/url_is/bitbucket.org/Brede_F_Klausen/bitbucket-webhook\n\nStatusCode:", http.StatusOK)
+	fmt.Fprintln(w, "http://www.fritjof.no/url_is/bitbucket.org/<owner>/<repository>\n\nExample:")
+	fmt.Fprintln(w, "http://www.fritjof.no/url_is/bitbucket.org/Brede_F_Klausen/bitbucket-webhook\n\nStatusCode:", http.StatusOK)
 }

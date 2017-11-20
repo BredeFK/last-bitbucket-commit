@@ -1,6 +1,6 @@
 //====================================================//
-// 		   AUTHOR: 	Brede Fritjof Klausen             //
-// 	   UNIVERSITY: 	NTNU in Gjøvik                    //
+//             AUTHOR: 	Brede Fritjof Klausen         //
+//         UNIVERSITY: 	NTNU in Gjøvik                //
 //====================================================//
 
 package main
