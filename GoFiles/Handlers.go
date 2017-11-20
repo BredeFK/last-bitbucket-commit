@@ -45,8 +45,8 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 			// For faster use
 			thisCommit := info.Values[0]
 
-			// Convert date to string
-			date := thisCommit.Date.Local().Format("Mon. 02. January 2006 @ 15:04:05")
+			// Convert date to string (UTC+1 = My timezone)
+			date := TimeFormat(thisCommit.Date, "Mon. 02. January 2006 @ 15:04:05")
 
 			// Set useful data in new struct
 			showinfo := ShowInfo{thisCommit.Author.User.DisplayName, thisCommit.Author.User.UserName, thisCommit.Message, thisCommit.Links.HTML.Href, date}
