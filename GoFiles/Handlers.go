@@ -1,6 +1,6 @@
 //====================================================//
 // 		   AUTHOR: 	Brede Fritjof Klausen             //
-// 	   UNIVERSITY: 	NTNU in Gjøvik                    //
+// 	   UNIVERSITY: 	NTNU in Gjï¿½vik                    //
 //====================================================//
 
 package main
@@ -36,11 +36,19 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 			// Make api url to get json from the repository
 			url := "https://api.bitbucket.org/2.0/repositories/" + parts[3] + "/" + parts[4] + "/commits"
 
+			// Create empty struct
+			info := Bitbucket{}
+
 			// Get info from api site
-			info := GetValues(url)
+			info = GetValues(url)
+
+			// Set useful data in new struct
+			thisCommit := info.Values[0]
+			date := thisCommit.Date.Format("Mon. 02. January 2006 @ 15:04:05")
+			showinfo := ShowInfo{thisCommit.Author.User.DisplayName, thisCommit.Author.User.UserName, thisCommit.Message, thisCommit.Links.HTML.Href, date}
 
 			// Convert to json
-			json.NewEncoder(w).Encode(info.Values[0]) // Print latest
+			json.NewEncoder(w).Encode(showinfo)
 
 		// Also acceptable if the domain is github.com, bur it's not implemented yet
 		// TODO : Implement for github later

@@ -84,3 +84,12 @@ type Parents struct {
 	Type  string `json:"type"`
 	Links Links  `json:"links"`
 }
+
+// ShowInfo struct
+type ShowInfo struct {
+	DisplayName string `json:"displayname"`
+	UserName    string `json:"userName"`
+	Message     string `json:"message"`
+	Diff        string `json:"diff"`
+	Date        string `json:"date"`
+}
