@@ -42,9 +42,13 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 			// Get info from api site
 			info = GetValues(url)
 
-			// Set useful data in new struct
+			// For faster use
 			thisCommit := info.Values[0]
-			date := thisCommit.Date.Format("Mon. 02. January 2006 @ 15:04:05")
+
+			// Convert date to string
+			date := thisCommit.Date.Local().Format("Mon. 02. January 2006 @ 15:04:05")
+
+			// Set useful data in new struct
 			showinfo := ShowInfo{thisCommit.Author.User.DisplayName, thisCommit.Author.User.UserName, thisCommit.Message, thisCommit.Links.HTML.Href, date}
 
 			// Convert to json

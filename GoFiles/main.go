@@ -7,16 +7,12 @@ package main
 
 import (
 	"net/http"
-
 	"os"
 )
 
 func main() {
-
-	port := os.Getenv("PORT")
 	http.HandleFunc("/", HandleHTML)
 	http.HandleFunc("/url_is/", HandleBitbucket)
+	port := os.Getenv("PORT")
 	http.ListenAndServe(":"+port, nil)
-	//http.ListenAndServe("localhost:8080", nil)
-
 }
