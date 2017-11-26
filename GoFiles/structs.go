@@ -7,6 +7,8 @@ package main
 
 import "time"
 
+////////STRUCTS FOR BITBUCKET////////
+
 // Bitbucket struct
 type Bitbucket struct {
 	Pagelen int      `json:"pagelen"`
@@ -93,3 +95,7 @@ type ShowInfo struct {
 	Diff        string `json:"diff"`
 	Date        string `json:"date"`
 }
+
+////////STRUCTS FOR GITHUB////////
+
+// TODO : Add structs for github here

@@ -33,14 +33,22 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 		// Acceptable if the domain is bitbucket.org
 		case "bitbucket.org":
 
-			// Make api url to get json from the repository
-			url := "https://api.bitbucket.org/2.0/repositories/" + parts[3] + "/" + parts[4] + "/commits"
+			// Make api url to get json from the bitbucket repository
+			bitURL := "https://api.bitbucket.org/2.0/repositories/" + parts[3] + "/" + parts[4] + "/commits"
 
 			// Create empty struct
 			info := Bitbucket{}
 
 			// Get info from api site
-			info = GetValues(url)
+			info = GetValues(bitURL)
+
+			// If Pagelen is -1
+			if info.Pagelen == -1 {
+
+				// This means that the url format is true, but it's not a valid repository
+				http.Error(w, "The repository is not valid", 404)
+				return
+			}
 
 			// For faster use
 			thisCommit := info.Values[0]
@@ -54,9 +62,12 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 			// Convert to json
 			json.NewEncoder(w).Encode(showinfo)
 
-		// Also acceptable if the domain is github.com, bur it's not implemented yet
-		// TODO : Implement for github later
+		// Also acceptable if the domain is github.com, but it's not implemented yet
 		case "github.com":
+
+			// TODO : Implement for github later
+			// Make api url to get json from the github repository
+			//gitURL := "https://api.github.com/repos/" + parts[3] + "/" + parts[4]
 
 			// Error because it hasn't been implemented yet
 			http.Error(w, "Not implemented yet", http.StatusNotImplemented)
@@ -81,8 +92,11 @@ func HandleBitbucket(w http.ResponseWriter, r *http.Request) {
 // HandleHTML handles welcome page
 func HandleHTML(w http.ResponseWriter, r *http.Request) {
 
+	// TODO : Come up with a better solution than this
+
 	// Print message to user about how to use the site
 	fmt.Fprintln(w, "Hello! Welcome to my project!\n\nTo get the latest commit in json format, you have to write like this:")
 	fmt.Fprintln(w, "http://www.fritjof.no/url_is/bitbucket.org/<owner>/<repository>\n\nExample:")
-	fmt.Fprintln(w, "http://www.fritjof.no/url_is/bitbucket.org/Brede_F_Klausen/bitbucket-webhook\n\nStatusCode:", http.StatusOK)
+	fmt.Fprintln(w, "http://www.fritjof.no/url_is/bitbucket.org/Brede_F_Klausen/bitbucket-webhook")
+	fmt.Fprintln(w, "\nSource code can be found here:\nhttps://bitbucket.org/Brede_F_Klausen/bitbucket-webhook\n\nHttp code: ", http.StatusOK)
 }

@@ -1,3 +1,8 @@
+//====================================================//
+//             AUTHOR: 	Brede Fritjof Klausen         //
+//         UNIVERSITY: 	NTNU in Gjøvik                //
+//====================================================//
+
 package main
 
 import "time"
